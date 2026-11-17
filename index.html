@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Survei Kepribadian & Sosial GTK Kapuas 2026</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body class="min-h-screen flex flex-col selection:bg-blue-600 selection:text-white">
+
+  <!-- TOAST NOTIFICATION -->
+  <div id="toast-container" class="fixed top-5 right-5 z-50 flex flex-col gap-2.5 max-w-sm w-full pointer-events-none"></div>
+
+  <!-- GLOBAL LOADING OVERLAY -->
+  <div id="global-loader" class="hidden fixed inset-0 bg-slate-900/45 backdrop-blur-xs z-50 flex items-center justify-center p-4">
+    <div class="bg-white px-6 py-4 rounded-2xl shadow-xl border border-slate-100 flex items-center gap-3.5">
+      <div class="loader-spin"></div>
+      <span id="loader-text" class="text-sm font-semibold text-slate-700">Memproses data...</span>
+    </div>
+  </div>
+
+  <!-- NAVBAR -->
+  <header class="glass-nav border-b border-slate-200/80 sticky top-0 z-30">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      <div class="flex items-center gap-3.5 cursor-pointer" onclick="resetToHome()">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-600 to-indigo-700 text-white flex items-center justify-center shadow-sm">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+          </svg>
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <h1 class="font-extrabold text-slate-900 text-sm sm:text-base tracking-tight">Survei Kepribadian & Sosial GTK 2026</h1>
+            <span class="hidden md:inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-bold bg-blue-50 text-blue-700 border border-blue-200/60">
+              KAB. KAPUAS
+            </span>
+          </div>
+          <p class="text-[11px] text-slate-500">HUT ke-81 PGRI dan HGN Kabupaten Kapuas Tahun 2026</p>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-2.5">
+        <button id="btn-nav-admin-login" onclick="openModalAdminLogin()"
+          class="px-3.5 py-2 text-xs font-bold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-xl transition">
+          Panel Panitia
+        </button>
+        <button id="btn-nav-admin-logout" onclick="handleAdminLogout()"
+          class="hidden px-3.5 py-2 text-xs font-bold text-rose-600 bg-rose-50 hover:bg-rose-100 border border-rose-200/60 rounded-xl transition">
+          Keluar Admin
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN CONTENT AREA -->
+  <div class="max-w-7xl mx-auto px-4 py-2 text-xs text-slate-600" role="status"><span id="connection-status">Memeriksa koneksi...</span> <button type="button" onclick="checkConnection()" class="underline ml-2">Cek koneksi</button></div>
+  <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
+
+    <!-- ==================== 1. VIEW AWAL: PENGANTAR & CARI NO USER / KTA ==================== -->
+    <section id="view-search" class="max-w-6xl mx-auto mt-2 sm:mt-4 fade-in">
+      <div class="bg-white rounded-3xl shadow-xl shadow-slate-200/70 border border-slate-200/80 overflow-hidden grid grid-cols-1 lg:grid-cols-12">
+
+        <!-- Left Panel: Pengantar Survei -->
+        <div class="lg:col-span-7 bg-gradient-to-br from-blue-800 via-blue-900 to-slate-950 text-white p-7 sm:p-10 flex flex-col justify-between">
+          <div class="space-y-5">
+            <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/10 border border-white/15 text-[11px] font-bold tracking-wide">
+              <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+              ANGKET KEPRIBADIAN & SOSIAL GTK KAPUAS 2026
+            </div>
+
+            <div>
+              <h2 class="text-2xl sm:text-3xl font-extrabold leading-tight tracking-tight">
+                Instrumen Penilaian Perilaku Kerja, Kepribadian, dan Sosial GTK
+              </h2>
+              <p class="text-blue-100/90 text-xs sm:text-sm mt-3 leading-relaxed">
+                Penilaian ini dilaksanakan dalam rangka Seleksi <strong>Guru Berprestasi</strong>, <strong>Guru Berdedikasi</strong>, dan <strong>Kepala Sekolah Berprestasi</strong> HUT ke-81 PGRI dan HGN Kabupaten Kapuas Tahun 2026.
+              </p>
+            </div>
+
+            <div class="bg-white/10 backdrop-blur-xs border border-white/15 rounded-2xl p-4 sm:p-5 space-y-3">
+              <h3 class="text-xs font-extrabold uppercase tracking-wider text-amber-300">
+                Ketentuan & Sasaran Responden
+              </h3>
+              <ul class="space-y-2 text-xs text-blue-50/95 leading-relaxed">
+                <li class="flex items-start gap-2">
+                  <span class="font-bold text-emerald-400">1.</span>
+                  <span><strong>Atasan (Kepala Sekolah / Pengawas):</strong> Menilai perilaku kerja peserta selama 6 bulan terakhir (Angket A untuk Guru, Angket B untuk Kepala Sekolah).</span>
+                </li>
+                <li class="flex items-start gap-2">
+                  <span class="font-bold text-emerald-400">2.</span>
+                  <span><strong>Rekan Sejawat (Guru):</strong> Menilai kolaborasi, integritas, dan hubungan harmonis rekan sejawat di satuan pendidikan.</span>
+                </li>
+                <li class="flex items-start gap-2">
+                  <span class="font-bold text-emerald-400">3.</span>
+                  <span><strong>Murid (Khusus Jenjang SMP/MTs & SMA/SMK/MA):</strong> Mengisi Angket C berdasarkan pengalaman belajar dan berinteraksi bersama Bapak/Ibu guru/kepala sekolah.</span>
+                </li>
+                <li class="flex items-start gap-2">
+                  <span class="font-bold text-emerald-400">4.</span>
+                  <span><strong>Skala Penilaian 1–10 & TDM:</strong> Terdiri dari 15 pernyataan (No. 1–8 Kepribadian, No. 9–15 Sosial). Pilih <strong>TDM</strong> jika belum pernah mengamati situasi tersebut.</span>
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="mt-6 pt-4 border-t border-white/15 flex flex-wrap items-center justify-between gap-2 text-[11px] text-blue-200/80">
+            <span>Acuan: UU No. 14/2005 & Perdirjen GTK 2626/7327</span>
+            <span>Kerahasiaan Responden Dijamin</span>
+          </div>
+        </div>
+
+        <!-- Right Panel: Input Nomor User / KTA PGRI -->
+        <div class="lg:col-span-5 p-7 sm:p-10 flex flex-col justify-center bg-white">
+          <div class="mb-6">
+            <div class="w-11 h-11 rounded-2xl bg-blue-600 text-white flex items-center justify-center font-extrabold text-lg mb-4 shadow-md shadow-blue-600/20">
+              01
+            </div>
+            <h3 class="text-xl font-extrabold text-slate-900">Masukkan Nomor Peserta</h3>
+            <p class="text-xs text-slate-500 mt-1 leading-relaxed">
+              Ketikkan <strong>Nomor KTA PGRI / Kode User</strong> guru atau kepala sekolah yang akan Anda nilai untuk membuka lembar angket.
+            </p>
+          </div>
+
+          <form onsubmit="handleSearchPeserta(event)" class="space-y-4">
+            <div>
+              <label class="block text-xs font-bold text-slate-700 mb-1.5">Nomor KTA PGRI / Kode Peserta *</label>
+              <input type="text" id="search-kta-input" required placeholder="Contoh: 1501010001"
+                class="w-full px-4 py-3.5 rounded-xl border border-slate-300 bg-slate-50/70 focus:bg-white focus:ring-2 focus:ring-blue-600 focus:border-blue-600 outline-none text-sm font-semibold tracking-wide transition" />
+            </div>
+            <button type="submit"
+              class="w-full py-3.5 px-4 bg-blue-600 hover:bg-blue-700 active:scale-[0.99] text-white font-bold rounded-xl shadow-lg shadow-blue-600/25 transition text-sm">
+              Cari Data Peserta & Lanjutkan &rarr;
+            </button>
+          </form>
+
+          <div class="mt-6 p-3.5 rounded-xl bg-slate-50 border border-slate-200/70 text-[11px] text-slate-600 space-y-1">
+            <p class="font-bold text-slate-800">Petunjuk Singkat:</p>
+            <p>• Mintalah Nomor KTA PGRI kepada peserta/panitia sekolah sebelum mengisi.</p>
+            <p>• Setelah nomor ditemukan, pilih peran Anda sebagai <strong>Murid</strong>, <strong>Guru</strong>, atau <strong>Atasan</strong>.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== 2. VIEW FORMULIR ANGKET (A / B / C) ==================== -->
+    <section id="view-form-angket" class="hidden max-w-5xl mx-auto space-y-6 fade-in">
+      <!-- Tombol Kembali -->
+      <div>
+        <button onclick="resetToHome()" class="inline-flex items-center gap-1.5 text-xs font-bold text-slate-600 hover:text-blue-700 bg-white px-3.5 py-2 rounded-xl border border-slate-200 shadow-2xs">
+          &larr; Ganti Nomor Peserta
+        </button>
+      </div>
+
+      <!-- Kartu Identitas Peserta yang Dinilai -->
+      <div class="bg-white rounded-2xl border border-slate-200/80 p-6 shadow-2xs">
+        <div class="flex flex-wrap items-center justify-between gap-3 pb-4 mb-4 border-b border-slate-100">
+          <div>
+            <span class="text-[11px] font-bold uppercase tracking-wider text-blue-600">Identitas Peserta yang Dinilai</span>
+            <h2 id="dsp-nama" class="text-xl font-extrabold text-slate-900 mt-0.5">-</h2>
+          </div>
+          <span id="dsp-angket-badge" class="px-3.5 py-1.5 rounded-full text-xs font-extrabold bg-blue-50 text-blue-700 border border-blue-200">
+            Pilih Peran Penilai
+          </span>
+        </div>
+
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
+          <div class="p-3 rounded-xl bg-slate-50 border border-slate-100">
+            <span class="text-[11px] text-slate-400 block">No. KTA PGRI</span>
+            <span id="dsp-kta" class="font-bold text-slate-800 mt-0.5 block">-</span>
+          </div>
+          <div class="p-3 rounded-xl bg-slate-50 border border-slate-100">
+            <span class="text-[11px] text-slate-400 block">Kategori Seleksi</span>
+            <span id="dsp-kategori" class="font-bold text-blue-700 mt-0.5 block">-</span>
+          </div>
+          <div class="p-3 rounded-xl bg-slate-50 border border-slate-100">
+            <span class="text-[11px] text-slate-400 block">Jenjang Satuan</span>
+            <span id="dsp-jenjang" class="font-bold text-slate-800 mt-0.5 block">-</span>
+          </div>
+          <div class="p-3 rounded-xl bg-slate-50 border border-slate-100">
+            <span class="text-[11px] text-slate-400 block">Asal Sekolah & Cabang</span>
+            <span id="dsp-sekolah" class="font-bold text-slate-800 mt-0.5 block">-</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Langkah 2: Pilih Peran & Identitas Penilai -->
+      <div class="bg-white rounded-2xl border border-slate-200/80 p-6 shadow-2xs space-y-5">
+        <div>
+          <h3 class="text-base font-extrabold text-slate-900">Identitas Responden / Penilai</h3>
+          <p class="text-xs text-slate-500 mt-0.5">Pilih status hubungan Anda dengan peserta yang dinilai. Butir angket akan menyesuaikan otomatis.</p>
+        </div>
+
+        <!-- 3 Pilihan Peran -->
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3.5" id="role-selector-grid">
+          <button type="button" onclick="selectEvaluatorRole('Atasan')" id="btn-role-Atasan"
+            class="p-4 rounded-2xl border-2 border-slate-200 text-left hover:border-blue-500 transition">
+            <div class="text-xs font-extrabold text-slate-900">1. Atasan</div>
+            <p class="text-[11px] text-slate-500 mt-1">Kepala Sekolah atau Pengawas Sekolah pembina.</p>
+          </button>
+
+          <button type="button" onclick="selectEvaluatorRole('Guru')" id="btn-role-Guru"
+            class="p-4 rounded-2xl border-2 border-slate-200 text-left hover:border-blue-500 transition">
+            <div class="text-xs font-extrabold text-slate-900">2. Guru (Rekan Sejawat)</div>
+            <p class="text-[11px] text-slate-500 mt-1">Rekan pendidik di satuan pendidikan yang sama.</p>
+          </button>
+
+          <button type="button" onclick="selectEvaluatorRole('Murid')" id="btn-role-Murid"
+            class="p-4 rounded-2xl border-2 border-slate-200 text-left hover:border-blue-500 transition">
+            <div class="text-xs font-extrabold text-slate-900">3. Murid</div>
+            <p id="role-murid-desc" class="text-[11px] text-slate-500 mt-1">Khusus jenjang SMP/MTs dan SMA/SMK/MA.</p>
+          </button>
+        </div>
+
+        <!-- Input Nama & Jabatan/Kelas Penilai -->
+        <div id="evaluator-identity-fields" class="hidden grid grid-cols-1 sm:grid-cols-2 gap-4 pt-3 border-t border-slate-100">
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1.5">Nama Lengkap Anda (Penilai) *</label>
+            <input type="text" id="eval-nama" required placeholder="Tuliskan nama lengkap Anda..."
+              class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 bg-slate-50/50 focus:bg-white focus:ring-2 focus:ring-blue-600 outline-none text-xs" />
+          </div>
+          <div>
+            <label id="eval-info-label" class="block text-xs font-bold text-slate-700 mb-1.5">Jabatan / Kelas *</label>
+            <input type="text" id="eval-info" required placeholder="Contoh: Kepala Sekolah / Pengawas / Kelas VIII A"
+              class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 bg-slate-50/50 focus:bg-white focus:ring-2 focus:ring-blue-600 outline-none text-xs" />
+          </div>
+          <div class="sm:col-span-2 p-4 rounded-2xl bg-amber-50/70 border border-amber-200/80 space-y-2.5">
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <div>
+                <label class="block text-xs font-extrabold text-slate-800">Unggah Foto Selfie Anda (Wajib — Tanpa Batas Ukuran MB) *</label>
+                <p class="text-[11px] text-slate-600 mt-0.5">Sebagai bukti bahwa pengisian angket benar-benar dilakukan oleh penilai (bukan oleh peserta yang bersangkutan).</p>
+              </div>
+              <span class="px-2.5 py-1 rounded-lg bg-amber-100 text-amber-900 text-[10px] font-bold">Kamera / Galeri</span>
+            </div>
+            <div class="flex flex-col sm:flex-row sm:items-center gap-3">
+              <input type="file" id="eval-selfie" accept="image/*" capture="user" onchange="previewSelfie(event)"
+                class="flex-1 text-xs text-slate-700 bg-white p-2 rounded-xl border border-slate-300 file:mr-3 file:py-1.5 file:px-3.5 file:rounded-lg file:border-0 file:bg-blue-600 file:text-white file:text-xs file:font-bold hover:file:bg-blue-700" />
+              <img id="eval-selfie-preview" class="hidden w-16 h-16 rounded-xl object-cover border-2 border-emerald-500 shadow-xs" alt="Pratinjau Selfie" />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Langkah 3: Daftar 15 Butir Pertanyaan Angket -->
+      <form id="form-kuisioner" onsubmit="handleSubmitSurvei(event)" class="hidden space-y-5">
+        <!-- Panduan Skala -->
+        <div class="bg-blue-50 border border-blue-200 rounded-2xl p-4 sm:p-5 text-xs text-blue-950 space-y-2">
+          <div class="font-extrabold text-blue-900" id="angket-title-header">Petunjuk Pengisian Angket</div>
+          <p id="angket-instruction-text" class="leading-relaxed">
+            Berikan skor berdasarkan perilaku yang Anda amati selama <strong>6 bulan terakhir</strong>. Pilih angka lebih tinggi jika perilaku lebih konsisten.
+          </p>
+          <div class="grid grid-cols-2 sm:grid-cols-6 gap-2 pt-1 text-[11px] font-semibold">
+            <div class="bg-white/80 px-2.5 py-1.5 rounded-lg border border-blue-100"><strong>1–2:</strong> Hampir tdk pernah</div>
+            <div class="bg-white/80 px-2.5 py-1.5 rounded-lg border border-blue-100"><strong>3–4:</strong> Jarang</div>
+            <div class="bg-white/80 px-2.5 py-1.5 rounded-lg border border-blue-100"><strong>5–6:</strong> Kadang-kadang</div>
+            <div class="bg-white/80 px-2.5 py-1.5 rounded-lg border border-blue-100"><strong>7–8:</strong> Sering</div>
+            <div class="bg-white/80 px-2.5 py-1.5 rounded-lg border border-blue-100"><strong>9–10:</strong> Hampir selalu</div>
+            <div class="bg-amber-100/90 text-amber-900 px-2.5 py-1.5 rounded-lg border border-amber-200"><strong>TDM:</strong> Tdk Dapat Menilai</div>
+          </div>
+        </div>
+
+        <!-- Container 15 Butir -->
+        <div id="questions-container" class="space-y-4"></div>
+
+        <!-- Submit Button -->
+        <div class="bg-white rounded-2xl border border-slate-200/80 p-5 flex flex-wrap items-center justify-between gap-4 shadow-2xs">
+          <div class="text-xs text-slate-600">
+            Pastikan seluruh <strong>15 pernyataan</strong> telah terisi sebelum mengirim jawaban.
+          </div>
+          <button type="submit"
+            class="px-7 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl shadow-md shadow-emerald-600/20 transition text-sm">
+            Kirim Jawaban Survei
+          </button>
+        </div>
+      </form>
+    </section>
+
+    <!-- ==================== 3. VIEW SUKSES KIRIM ==================== -->
+    <section id="view-success" class="hidden max-w-lg mx-auto mt-10 fade-in">
+      <div class="bg-white rounded-3xl border border-slate-200 p-8 text-center shadow-xl space-y-4">
+        <div class="w-16 h-16 rounded-2xl bg-emerald-100 text-emerald-600 mx-auto flex items-center justify-center">
+          <svg class="w-9 h-9" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+          </svg>
+        </div>
+        <h2 class="text-xl font-extrabold text-slate-900">Terima Kasih, Jawaban Tercatat!</h2>
+        <p id="success-message-text" class="text-xs sm:text-sm text-slate-600 leading-relaxed">
+          Hasil penilaian Anda telah tersimpan secara aman ke database Panitia Seleksi GTK Kabupaten Kapuas 2026.
+        </p>
+        <div class="pt-3">
+          <button onclick="resetToHome()"
+            class="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl text-xs sm:text-sm shadow-sm">
+            Isi Survei untuk Peserta Lain
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== 4. VIEW ADMIN PANITIA ==================== -->
+    <section id="view-admin" class="hidden space-y-6 fade-in">
+      <div class="bg-white rounded-2xl border border-slate-200/80 p-6 flex flex-wrap items-center justify-between gap-4 shadow-2xs">
+        <div>
+          <h2 class="text-lg font-extrabold text-slate-900">Rekapitulasi Hasil Survei Kepribadian & Sosial</h2>
+          <p class="text-xs text-slate-500 mt-0.5">Terhubung otomatis dengan sheet <code>REKAP_SURVEI</code> & <code>HASIL_SURVEI</code>.</p>
+        </div>
+        <div class="flex flex-wrap items-center gap-2.5">
+          <button id="btn-toggle-survei" onclick="toggleSurveiStatus()"
+            class="px-4 py-2 rounded-xl text-xs font-extrabold border transition">
+            Status: BUKA
+          </button>
+          <button onclick="refreshAdminRekap()"
+            class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-bold rounded-xl">
+            Sinkronkan Ulang
+          </button>
+          <button onclick="exportSurveiCSV()"
+            class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-xl shadow-2xs">
+            Ekspor CSV Rekap
+          </button>
+        </div>
+      </div>
+
+      <!-- Tabel Rekap Nilai Per Peserta -->
+      <div class="bg-white rounded-2xl border border-slate-200/80 p-6 space-y-4 shadow-2xs">
+        <div class="flex flex-wrap items-center justify-between gap-3">
+          <h3 class="text-sm font-extrabold text-slate-900">Nilai Akhir & Rincian Unsur Penilai</h3>
+          <select id="adm-filter-kat" onchange="renderAdminRekapTable()" class="px-3.5 py-2 border border-slate-300 rounded-xl text-xs bg-slate-50">
+            <option value="">Semua Kategori</option>
+            <option value="Guru Berprestasi">Guru Berprestasi</option>
+            <option value="Guru Berdedikasi">Guru Berdedikasi</option>
+            <option value="Kepala Sekolah Berprestasi">Kepala Sekolah Berprestasi</option>
+          </select>
+        </div>
+
+        <div class="overflow-x-auto rounded-xl border border-slate-200">
+          <table class="w-full text-left border-collapse text-xs">
+            <thead>
+              <tr class="bg-slate-100 text-slate-700 border-b border-slate-200">
+                <th class="p-3">KTA / Nama Peserta</th>
+                <th class="p-3">Kategori / Jenjang</th>
+                <th class="p-3 text-center">Resp (A/G/M)</th>
+                <th class="p-3 text-center">Kepribadian (1-8)</th>
+                <th class="p-3 text-center">Sosial (9-15)</th>
+                <th class="p-3 text-center">Skor Atasan</th>
+                <th class="p-3 text-center">Skor Guru</th>
+                <th class="p-3 text-center">Skor Murid</th>
+                <th class="p-3 text-center font-extrabold bg-blue-50 text-blue-900">Nilai Akhir</th>
+              </tr>
+            </thead>
+            <tbody id="adm-rekap-tbody" class="divide-y divide-slate-100"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Log Responden Terbaru -->
+      <div class="bg-white rounded-2xl border border-slate-200/80 p-6 space-y-4 shadow-2xs">
+        <h3 class="text-sm font-extrabold text-slate-900">Log Responden Masuk Terbaru</h3>
+        <div class="overflow-x-auto rounded-xl border border-slate-200">
+          <table class="w-full text-left border-collapse text-xs">
+            <thead>
+              <tr class="bg-slate-100 text-slate-700 border-b border-slate-200">
+                <th class="p-3">Waktu</th>
+                <th class="p-3">Peserta Dinilai</th>
+                <th class="p-3">Angket</th>
+                <th class="p-3">Penilai</th>
+                <th class="p-3 text-center">Valid / TDM</th>
+                <th class="p-3 text-center">Skor Total</th>
+                <th class="p-3 text-center">Bukti Selfie</th>
+              </tr>
+            </thead>
+            <tbody id="adm-log-tbody" class="divide-y divide-slate-100"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ==================== MODAL LOGIN ADMIN PANITIA ==================== -->
+  <div id="modal-admin-login" class="hidden fixed inset-0 bg-slate-900/55 backdrop-blur-xs z-40 flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-sm w-full p-6 shadow-2xl border border-slate-200 fade-in">
+      <div class="flex items-center justify-between pb-3 mb-4 border-b border-slate-100">
+        <h3 class="text-base font-extrabold text-slate-900">Masuk Panel Admin Survei</h3>
+        <button onclick="closeModal('modal-admin-login')" class="text-slate-400 hover:text-slate-600 text-xl font-bold">&times;</button>
+      </div>
+      <form onsubmit="handleAdminLogin(event)" class="space-y-4 text-xs">
+        <div>
+          <label class="block font-bold text-slate-700 mb-1">Username Admin</label>
+          <input type="text" id="adm-username" required placeholder="admin" class="w-full p-2.5 border border-slate-300 rounded-xl" />
+        </div>
+        <div>
+          <label class="block font-bold text-slate-700 mb-1">Kata Sandi</label>
+          <input type="password" id="adm-password" required placeholder="••••••••" class="w-full p-2.5 border border-slate-300 rounded-xl" />
+        </div>
+        <button type="submit" class="w-full py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl">
+          Masuk Dashboard Admin
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <script src="./config.js"></script>
+  <script src="./app.js"></script>
+</body>
+</html>
