@@ -236,28 +236,32 @@
       document.getElementById('dsp-sekolah').textContent = `${p.asal_sekolah} (${p.utusan_cabang})`;
       document.getElementById('dsp-angket-badge').textContent = 'Pilih Peran Anda di Bawah';
 
-      // Reset tombol peran
-      ['Atasan', 'Guru', 'Murid'].forEach(r => {
-        const btn = document.getElementById('btn-role-' + r);
-        btn.className = 'p-4 rounded-2xl border-2 border-slate-200 text-left hover:border-blue-500 transition bg-white';
-        btn.disabled = false;
+      let tersedia = 0;
+      ['Atasan','Guru','Murid'].forEach(role => {
+        const btn = document.getElementById('btn-role-' + role);
+        const status = document.getElementById('progres-' + role);
+        const kuota = p.progres?.[role];
+        const berlaku = role !== 'Murid' || p.allow_murid;
+        btn.disabled = !berlaku || !kuota || kuota.terisi >= kuota.batas;
+        btn.className = 'p-4 rounded-2xl border-2 text-left ' + (btn.disabled
+          ? 'border-slate-200 bg-slate-100 cursor-not-allowed'
+          : 'bg-white border-slate-200 hover:border-blue-500');
+        if (!berlaku) status.textContent = 'Tidak berlaku untuk jenjang ini.';
+        else if (!kuota) status.textContent = 'Progres belum tersedia.';
+        else {
+          const jumlah = kuota.terisi + ' dari ' + kuota.batas;
+          status.textContent = role === 'Atasan'
+            ? (kuota.terisi ? 'Sudah mengisi' : 'Belum mengisi') + ' (' + jumlah + ')'
+            : jumlah + ' sudah mengisi' + (btn.disabled ? ' · Kuota penuh' : '');
+        }
+        if (!btn.disabled) tersedia++;
       });
-
-      // Cek apakah jenjang mengizinkan Murid (SMP/MTs & SMA/SMK/MA)
-      const btnMurid = document.getElementById('btn-role-Murid');
-      const descMurid = document.getElementById('role-murid-desc');
-      if (!p.allow_murid) {
-        btnMurid.disabled = true;
-        btnMurid.className = 'p-4 rounded-2xl border-2 border-slate-100 bg-slate-100/70 text-left opacity-60 cursor-not-allowed';
-        descMurid.textContent = `Tidak tersedia untuk jenjang ${p.jenjang}.`;
-      } else {
-        descMurid.textContent = `Tersedia untuk jenjang ${p.jenjang}.`;
-      }
+      if (!tersedia) document.getElementById('dsp-angket-badge').textContent = p.progres ? 'Semua kuota pengisian sudah penuh' : 'Progres kuota belum tersedia';
     }
 
     function selectEvaluatorRole(role) {
       const p = STATE.selectedPeserta;
-      if (role === 'Murid' && !p.allow_murid) return;
+      if (document.getElementById('btn-role-' + role).disabled) return;
 
       STATE.selectedRole = role;
       STATE.answers = Array(15).fill(null);
@@ -401,6 +405,13 @@
         });
         setLoading(false);
         if (!res.success) {
+          if (res.progres) {
+            const peserta = {...STATE.selectedPeserta, progres:res.progres};
+            resetToHome();
+            STATE.selectedPeserta = peserta;
+            renderPesertaTarget();
+            showView('form-angket');
+          }
           showToast(res.message, 'error');
           return;
         }
